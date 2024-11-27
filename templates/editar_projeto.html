@@ -1,0 +1,62 @@
+{% extends '_layout.html' %}
+
+{% block title %}Editar Projeto - Gestão de Projetos{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Editar Projeto</h1>
+
+    <!-- Formulário para edição de projetos -->
+    <form action="{{ url_for('editar_projeto', projeto_id=projeto['id']) }}" method="POST">
+        <!-- Campo: Nome do Projeto -->
+        <div class="form-group">
+            <label for="nome">Nome do Projeto</label>
+            <input 
+                type="text" 
+                class="form-control" 
+                id="nome" 
+                name="nome" 
+                value="{{ projeto['nome'] }}" 
+                placeholder="Digite o nome do projeto" 
+                required>
+        </div>
+
+        <!-- Campo: Descrição -->
+        <div class="form-group">
+            <label for="descricao">Descrição</label>
+            <textarea 
+                class="form-control" 
+                id="descricao" 
+                name="descricao" 
+                rows="3" 
+                placeholder="Descreva o projeto" 
+                required>{{ projeto['descricao'] }}</textarea>
+        </div>
+
+        <!-- Campo: Selecionar Responsável -->
+        <div class="form-group">
+            <label for="responsavel_id">Responsável</label>
+            <select 
+                class="form-control" 
+                id="responsavel_id" 
+                name="responsavel_id" 
+                required>
+                <option value="" disabled>Escolha um responsável</option>
+                {% for membro in membros %}
+                    <option 
+                        value="{{ membro['id'] }}" 
+                        {% if membro['id'] == projeto['responsavel_id'] %} selected {% endif %}>
+                        {{ membro['nome'] }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Botão para salvar alterações -->
+        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+    </form>
+</div>
+{% endblock %}
+
+
+

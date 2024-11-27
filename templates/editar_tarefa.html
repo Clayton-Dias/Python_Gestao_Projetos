@@ -1,0 +1,80 @@
+{% extends '_layout.html' %}
+
+{% block title %}Editar Tarefa - Gestão de Projetos{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Editar Tarefa</h1>
+
+    <!-- Formulário para editar tarefa -->
+    <form action="{{ url_for('editar_tarefa', tarefa_id=tarefa['id']) }}" method="POST">
+        <!-- Campo: Nome da Tarefa -->
+        <div class="form-group">
+            <label for="nome">Nome da Tarefa</label>
+            <input 
+                type="text" 
+                class="form-control" 
+                id="nome" 
+                name="nome" 
+                value="{{ tarefa[1] }}" 
+                placeholder="Digite o nome da tarefa" 
+                required>
+        </div>
+
+        <!-- Campo: Descrição -->
+        <div class="form-group">
+            <label for="descricao">Descrição</label>
+            <textarea 
+                class="form-control" 
+                id="descricao" 
+                name="descricao" 
+                rows="3" 
+                placeholder="Descreva os detalhes da tarefa" 
+                required>{{ tarefa[2] }}</textarea>
+        </div>
+
+        <!-- Campo: Prazo -->
+        <div class="form-group">
+            <label for="prazo">Prazo</label>
+            <input 
+                type="datetime-local" 
+                class="form-control" 
+                id="prazo" 
+                name="prazo" 
+                value="{{ tarefa[3]|replace(' ', 'T') }}" 
+                required>
+        </div>
+
+        <!-- Campo: Prioridade -->
+        <div class="form-group">
+            <label for="prioridade">Prioridade</label>
+            <select 
+                class="form-control" 
+                id="prioridade" 
+                name="prioridade" 
+                required>
+                <option value="Alta" {% if tarefa[4] == 'Alta' %} selected {% endif %}>Alta</option>
+                <option value="Média" {% if tarefa[4] == 'Média' %} selected {% endif %}>Média</option>
+                <option value="Baixa" {% if tarefa[4] == 'Baixa' %} selected {% endif %}>Baixa</option>
+            </select>
+        </div>
+
+        <!-- Campo: Status -->
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select 
+                class="form-control" 
+                id="status" 
+                name="status" 
+                required>
+                <option value="Pendente" {% if tarefa[5] == 'Pendente' %} selected {% endif %}>Pendente</option>
+                <option value="Em Andamento" {% if tarefa[5] == 'Em Andamento' %} selected {% endif %}>Em Andamento</option>
+                <option value="Concluída" {% if tarefa[5] == 'Concluída' %} selected {% endif %}>Concluída</option>
+            </select>
+        </div>
+
+        <!-- Botão de submissão -->
+        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+    </form>
+</div>
+{% endblock %}

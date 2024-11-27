@@ -1,0 +1,46 @@
+{% extends '_layout.html' %}
+
+{% block title %}Criar Tarefa{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Título da Página -->
+    <h1 class="my-4">Criar Tarefa</h1>
+
+    <!-- Formulário para criação de tarefa -->
+    <form action="{{ url_for('criar_tarefa', projeto_id=projeto_id) }}" method="POST">
+        <!-- Campo para o Nome da Tarefa -->
+        <div class="form-group">
+            <label for="nome">Nome da Tarefa</label>
+            <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite o nome da tarefa"
+                required>
+        </div>
+
+        <!-- Campo para a Descrição -->
+        <div class="form-group">
+            <label for="descricao">Descrição</label>
+            <textarea class="form-control" id="descricao" name="descricao" rows="3" placeholder="Detalhe a tarefa"
+                required></textarea>
+        </div>
+
+        <!-- Campo para o Prazo -->
+        <div class="form-group">
+            <label for="prazo">Prazo</label>
+            <input type="date" class="form-control" id="prazo" name="prazo" required>
+        </div>
+
+        <!-- Campo para a Prioridade -->
+        <div class="form-group">
+            <label for="prioridade">Prioridade</label>
+            <select class="form-control" id="prioridade" name="prioridade" required>
+                <option value="" disabled selected>Escolha a prioridade</option>
+                <option value="Alta">Alta</option>
+                <option value="Média">Média</option>
+                <option value="Baixa">Baixa</option>
+            </select>
+        </div>
+
+        <!-- Botão de Submissão -->
+        <button type="submit" class="btn btn-primary">Criar
+
+{% endblock %}

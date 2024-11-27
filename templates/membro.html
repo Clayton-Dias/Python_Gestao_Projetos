@@ -1,0 +1,39 @@
+{% extends '_layout.html' %}
+
+{% block title %}Adicionar Membro - Gestão de Projetos{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Adicionar Membro</h1>
+
+    <!-- Formulário para adicionar novo membro -->
+    <form action="{{ url_for('criar_membro') }}" method="POST">
+        <!-- Campo: Nome do Membro -->
+        <div class="form-group">
+            <label for="nome">Nome do Membro</label>
+            <input 
+                type="text" 
+                class="form-control" 
+                id="nome" 
+                name="nome" 
+                placeholder="Digite o nome completo" 
+                required>
+        </div>
+
+        <!-- Campo: E-mail do Membro -->
+        <div class="form-group">
+            <label for="email">E-mail do Membro</label>
+            <input 
+                type="email" 
+                class="form-control" 
+                id="email" 
+                name="email" 
+                placeholder="Digite o e-mail válido" 
+                required>
+        </div>
+
+        <!-- Botão para enviar o formulário -->
+        <button type="submit" class="btn btn-primary">Adicionar Membro</button>
+    </form>
+</div>
+{% endblock %}

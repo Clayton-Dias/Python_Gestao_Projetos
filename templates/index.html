@@ -1,0 +1,30 @@
+{% extends '_layout.html' %}
+
+{% block title %}Início - Gestão de Projetos{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Gestão de Projetos</h1>
+
+    <!-- Botão para criar um novo projeto -->
+    <div class="text-right mb-3">
+        <a href="{{ url_for('criar_projeto') }}" class="btn btn-primary">Criar Novo Projeto</a>
+    </div>
+
+    <!-- Lista de Projetos -->
+    <h3>Projetos</h3>
+    {% if projetos %}
+        <div class="list-group">
+            {% for projeto in projetos %}
+            <a href="{{ url_for('projeto', projeto_id=projeto['id']) }}" class="list-group-item list-group-item-action">
+                <h5 class="mb-1">{{ projeto['nome'] }}</h5>
+                <p class="mb-1">{{ projeto['descricao'] }}</p>
+                <small>Responsável: {{ projeto['responsavel_nome'] }}</small>
+            </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">Nenhum projeto encontrado. Clique em "Criar Novo Projeto" para começar.</p>
+    {% endif %}
+</div>
+{% endblock %}
