@@ -1,211 +1,92 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_mysqldb import MySQL
-from datetime import datetime
 
-app = Flask(__name__)
+# Importação da classe Config
+from config import Config
+
+# Importação dos módulos responsáveis por funcionalidades específicas
+from modules.adicionarMembro import mod_adicionar_membro
+from modules.criarMembro import mod_criar_membro
+from modules.criarProjeto import mod_criar_projeto
+from modules.criarTarefa import mod_criar_tarefa
+from modules.deletarProjeto import mod_deletar_projeto
+from modules.deletarTarefa import mod_deletar_tarefa
+from modules.editarProjeto import mod_editar_projeto
+from modules.editarTarefa import mod_editar_tarefa
+from modules.index import mod_index
+from modules.projeto import mod_projeto
+from modules.removerMembro import mod_remover_membro
+from modules.start import mod_start
+
+app = Flask(__name__)  # Inicializa a aplicação Flask
 
 # Configuração do banco de dados MySQL
-app.config.update(
-    MYSQL_HOST='localhost',         # Servidor MySQL
-    MYSQL_USER='root',              # Usuário MySQL
-    MYSQL_PASSWORD='',              # Senha do MySQL
-    MYSQL_DB='projeto_gestao',      # Nome da base de dados
-    MYSQL_CURSORCLASS='DictCursor', # Retorna dados como dicionário
-    MYSQL_CHARSET='utf8mb4',        # Suporte completo a Unicode
-    MYSQL_USE_UNICODE=True          # Converte caracteres para Unicode
-)
+# Carregar configurações do banco de dados a partir da classe Config
+app.config.from_object(Config)
 
 # Inicializa a extensão MySQL
 mysql = MySQL(app)
 
-# Configura a conexão para UTF-8 e português do Brasil antes de cada requisição
+# Configurações globais executadas antes de cada requisição
 @app.before_request
 def before_request():
-    cur = mysql.connection.cursor()
-    cur.execute("SET NAMES utf8mb4")
-    cur.execute("SET character_set_connection=utf8mb4")
-    cur.execute("SET character_set_client=utf8mb4")
-    cur.execute("SET character_set_results=utf8mb4")
-    cur.execute("SET lc_time_names = 'pt_BR'")
-    cur.close()
+    return mod_start(mysql)  # Configurações gerais do ambiente (e.g., charset)
 
-# Rota principal: listar todos os projetos
+# Rota principal para a página inicial com paginação
 @app.route('/')
 def index():
-    sql = '''
-        SELECT p.id, p.nome, p.descricao, p.data_inicio, m.nome AS responsavel_nome
-        FROM projeto p
-        JOIN membro m ON p.responsavel_id = m.id;
-    '''
-    cur = mysql.connection.cursor()
-    cur.execute(sql)
-    projetos = cur.fetchall()
-    cur.close()
-    return render_template('index.html', projetos=projetos)
+    return mod_index(mysql)  # Redireciona para a função do módulo `index`
 
 # Rota para criar um novo projeto
 @app.route('/criar_projeto', methods=['GET', 'POST'])
 def criar_projeto():
-
-    if request.method == 'POST':  # Lógica de inserção de projeto
-        nome = request.form['nome']
-        descricao = request.form['descricao']
-        responsavel_id = request.form['responsavel_id']
-
-        sql = '''
-            INSERT INTO projeto (nome, descricao, responsavel_id, data_inicio)
-            VALUES (%s, %s, %s, %s)
-        '''
-        cur = mysql.connection.cursor()
-        cur.execute(sql, (nome, descricao, responsavel_id, datetime.utcnow()))
-        mysql.connection.commit()
-        cur.close()
-        return redirect(url_for('index'))
-
-    # Seleciona membros para atribuir ao projeto
-    sql = "SELECT * FROM membro"
-    cur = mysql.connection.cursor()
-    cur.execute(sql)
-    membros = cur.fetchall()
-    cur.close()
-
-    return render_template('criar_projeto.html', membros=membros)
+    return mod_criar_projeto(mysql)  # Lógica de criação de projeto está no módulo
 
 # Rota para editar um projeto existente
 @app.route('/editar_projeto/<int:projeto_id>', methods=['GET', 'POST'])
 def editar_projeto(projeto_id):
-    cur = mysql.connection.cursor()
-    
-    if request.method == 'POST':  # Lógica de atualização
-        nome = request.form['nome']
-        descricao = request.form['descricao']
-        responsavel_id = request.form['responsavel_id']
-        sql = '''
-            UPDATE projeto 
-            SET nome = %s, descricao = %s, responsavel_id = %s 
-            WHERE id = %s
-        '''
-        cur.execute(sql, (nome, descricao, responsavel_id, projeto_id))
-        mysql.connection.commit()
-        cur.close()
-        return redirect(url_for('index'))
+    return mod_editar_projeto(mysql, projeto_id)  # Chama a lógica de edição no módulo
 
-    # Obtem detalhes do projeto e membros para edição
-    cur.execute("SELECT * FROM projeto WHERE id = %s", [projeto_id])
-    projeto = cur.fetchone()
-    cur.execute("SELECT * FROM membro")
-    membros = cur.fetchall()
-    cur.close()
-    return render_template('editar_projeto.html', projeto=projeto, membros=membros)
+# Rota para deletar um projeto
+@app.route('/deletar_projeto/<int:projeto_id>', methods=['POST'])
+def deletar_projeto(projeto_id):
+    return mod_deletar_projeto(mysql, projeto_id)  # Lógica de exclusão no módulo
 
-# Rota para criar uma tarefa em um projeto específico
+# Rota para exibir detalhes de um projeto (tarefas e membros)
+@app.route('/projeto/<int:projeto_id>', methods=['GET'])
+def projeto(projeto_id):
+    return mod_projeto(mysql, projeto_id)  # Chama a lógica de detalhamento no módulo
+
+# Rota para criar uma nova tarefa dentro de um projeto específico
 @app.route('/criar_tarefa/<int:projeto_id>', methods=['GET', 'POST'])
 def criar_tarefa(projeto_id):
-    if request.method == 'POST':  # Lógica de inserção de tarefa
-        nome = request.form['nome']
-        descricao = request.form['descricao']
-        prazo = datetime.strptime(request.form['prazo'], '%Y-%m-%d')
-        prioridade = request.form['prioridade']
-
-        sql = '''
-            INSERT INTO tarefa (nome, descricao, prazo, prioridade, projeto_id)
-            VALUES (%s, %s, %s, %s, %s)
-        '''
-        cur = mysql.connection.cursor()
-        cur.execute(sql, (nome, descricao, prazo, prioridade, projeto_id))
-        mysql.connection.commit()
-        cur.close()
-        return redirect(url_for('projeto', projeto_id=projeto_id))
-
-    return render_template('criar_tarefa.html', projeto_id=projeto_id)
+    return mod_criar_tarefa(mysql, projeto_id)  # Lógica de criação de tarefas
 
 # Rota para editar uma tarefa existente
 @app.route('/editar_tarefa/<int:tarefa_id>', methods=['GET', 'POST'])
 def editar_tarefa(tarefa_id):
-    cur = mysql.connection.cursor()
-    
-    if request.method == 'POST':  # Lógica de atualização de tarefa
-        nome = request.form['nome']
-        descricao = request.form['descricao']
-        prazo_str = request.form['prazo'].split('T')[0]  # Remove o sufixo 'T00:00'
-        prazo = datetime.strptime(prazo_str, '%Y-%m-%d')
-        prioridade = request.form['prioridade']
-        status = request.form['status']
+    return mod_editar_tarefa(mysql, tarefa_id)  # Chama o módulo responsável pela edição
 
-        sql = '''
-            UPDATE tarefa 
-            SET nome = %s, descricao = %s, prazo = %s, prioridade = %s, status = %s 
-            WHERE id = %s
-        '''
-        cur.execute(sql, (nome, descricao, prazo, prioridade, status, tarefa_id))
-        mysql.connection.commit()
-        cur.close()
-        
-        return redirect(url_for('projeto', projeto_id=request.form['projeto_id']))
-
-    # Obtem detalhes da tarefa para edição
-    sql = "SELECT * FROM tarefa WHERE id = %s"
-    cur.execute(sql, [tarefa_id])
-    tarefa = cur.fetchone()
-    cur.close()
-    
-    return render_template('editar_tarefa.html', tarefa=tarefa)
-
-# Rota para detalhes do projeto (tarefas e membros)
-@app.route('/projeto/<int:projeto_id>', methods=['GET'])
-def projeto(projeto_id):
-    cur = mysql.connection.cursor()
-    
-    # Listagem de tarefas agrupadas por status
-    cur.execute("SELECT * FROM tarefa WHERE projeto_id = %s AND status = 'Pendente'", [projeto_id])
-    tarefas_pendentes = cur.fetchall()
-
-    cur.execute("SELECT * FROM tarefa WHERE projeto_id = %s AND status = 'Em andamento'", [projeto_id])
-    tarefas_andamento = cur.fetchall()
-
-    cur.execute("SELECT * FROM tarefa WHERE projeto_id = %s AND status = 'Concluída'", [projeto_id])
-    tarefas_concluidas = cur.fetchall()
-
-    # Membros associados ao projeto
-    cur.execute("""
-        SELECT m.id, m.nome, m.email 
-        FROM membro m
-        INNER JOIN projeto_membro pm ON m.id = pm.membro_id
-        WHERE pm.projeto_id = %s
-    """, [projeto_id])
-    membros = cur.fetchall()
-
-    # Detalhes do projeto
-    cur.execute("SELECT * FROM projeto WHERE id = %s", [projeto_id])
-    projeto = cur.fetchone()
-    cur.close()
-
-    
-    page = {
-        "projeto": projeto,
-        "pendentes": tarefas_pendentes,
-        "andamento": tarefas_andamento,
-        "concluidas" :tarefas_concluidas,
-        "membros": membros
-    }
-    return render_template('projeto_detalhes.html', page=page)
+# Rota para deletar uma tarefa
+@app.route('/deletar_tarefa/<int:tarefa_id>', methods=['POST'])
+def deletar_tarefa(tarefa_id):
+    return mod_deletar_tarefa(mysql, tarefa_id)  # Módulo cuida da exclusão
 
 # Rota para criar um novo membro
 @app.route('/criar_membro', methods=['GET', 'POST'])
 def criar_membro():
-    if request.method == 'POST':  # Lógica de inserção de membro
-        nome = request.form['nome']
-        email = request.form['email']
+    return mod_criar_membro(mysql)  # Módulo cuida da criação de membros
 
-        sql = "INSERT INTO membro (nome, email) VALUES (%s, %s)"
-        cur = mysql.connection.cursor()
-        cur.execute(sql, (nome, email))
-        mysql.connection.commit()
-        cur.close()
-        return redirect(url_for('index'))
-    
-    return render_template('membro.html')
+# Rota para remover um membro de um projeto
+@app.route('/projeto/<int:projeto_id>/remover_membro/<int:membro_id>', methods=['POST'])
+def remover_membro(projeto_id, membro_id):
+    return mod_remover_membro(mysql, projeto_id, membro_id)  # Chama o módulo de remoção
 
-# Inicia o servidor
+# Rota para adicionar um membro a um projeto
+@app.route('/projeto/<int:projeto_id>/adicionar_membro', methods=['POST'])
+def adicionar_membro(projeto_id):
+    return mod_adicionar_membro(mysql, projeto_id)  # Lógica de adição no módulo
+
+# Inicia o servidor Flask no modo de depuração
 if __name__ == "__main__":
     app.run(debug=True)

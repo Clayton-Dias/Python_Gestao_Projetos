@@ -7,12 +7,16 @@
 <div class="container">
     <!-- Título do Projeto -->
     <h1 class="my-4">{{ page.projeto.nome }}</h1>
-    
+
     <!-- Informações do Projeto -->
     <p><strong>Descrição:</strong> {{ page.projeto.descricao }}</p>
-    <p><strong>Responsável:</strong> {{ page.projeto.responsavel_id }}</p>
+    <p><strong>Responsável:</strong> {{ page.projeto.responsavel_nome }}</p>
     <!-- Botão para Editar Projeto -->
-    <a href="{{ url_for('editar_projeto', projeto_id=page.projeto.id) }}" class="btn btn-primary my-3">Editar Projeto</a>
+    <a href="{{ url_for('editar_projeto', projeto_id=page.projeto.id) }}" class="btn btn-primary my-3">Editar
+        Projeto</a>
+
+    <!-- Botão para criar nova tarefa -->
+    <a href="{{ url_for('criar_tarefa', projeto_id=page.projeto['id']) }}" class="btn btn-primary">Criar Tarefa</a>
 
     <!-- Lista de Tarefas -->
     <h3 class="mt-4">Lista de Tarefas</h3>
@@ -24,13 +28,22 @@
         <li class="list-group-item">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <strong>{{ tarefa.nome }}</strong> 
-                    <span class="text-muted">(Prazo: {{ tarefa.prazo }})</span>
+                    <strong>{{ tarefa.nome }} - Prioridade: {{ tarefa.prioridade }}</strong>
+                    <p><span class="text-muted">(Prazo: {{ tarefa.prazo }})</span></p>
                     <p>{{ tarefa.descricao }}</p>
                 </div>
-                <!-- Botão para Editar Tarefa -->
-                <a href="{{ url_for('editar_tarefa', tarefa_id=tarefa.id) }}" class="btn btn-sm btn-secondary">Editar</a>
-            </div>
+                <!-- Agrupa os botões de editar e deletar -->
+                <div class="btn-group" role="group">
+                    <!-- Botão para editar -->
+                    <a href="{{ url_for('editar_tarefa', tarefa_id=tarefa.id) }}" class="btn btn-warning">Editar</a>
+
+                    <!-- Botão para deletar -->
+                    <form action="{{ url_for('deletar_tarefa', tarefa_id=tarefa.id) }}" method="POST"
+                        style="display:inline;">
+                        <input type="hidden" name="projeto_id" value="{{ page.projeto.id }}">
+                        <button type="submit" class="btn btn-danger">Deletar</button>
+                    </form>
+                </div>
         </li>
         {% else %}
         <li class="list-group-item text-muted">Nenhuma tarefa pendente.</li>
@@ -44,13 +57,22 @@
         <li class="list-group-item">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <strong>{{ tarefa.nome }}</strong> 
-                    <span class="text-muted">(Prazo: {{ tarefa.prazo }})</span>
+                    <strong>{{ tarefa.nome }} - Prioridade: {{ tarefa.prioridade }}</strong>
+                    <p><span class="text-muted">(Prazo: {{ tarefa.prazo }})</span></p>
                     <p>{{ tarefa.descricao }}</p>
                 </div>
-                <!-- Botão para Editar Tarefa -->
-                <a href="{{ url_for('editar_tarefa', tarefa_id=tarefa.id) }}" class="btn btn-sm btn-secondary">Editar</a>
-            </div>
+                <!-- Agrupa os botões de editar e deletar -->
+                <div class="btn-group" role="group">
+                    <!-- Botão para editar -->
+                    <a href="{{ url_for('editar_tarefa', tarefa_id=tarefa.id) }}" class="btn btn-warning">Editar</a>
+
+                    <!-- Botão para deletar -->
+                    <form action="{{ url_for('deletar_tarefa', tarefa_id=tarefa.id) }}" method="POST"
+                        style="display:inline;">
+                        <input type="hidden" name="projeto_id" value="{{ page.projeto.id }}">
+                        <button type="submit" class="btn btn-danger">Deletar</button>
+                    </form>
+                </div>
         </li>
         {% else %}
         <li class="list-group-item text-muted">Nenhuma tarefa em andamento.</li>
@@ -64,12 +86,22 @@
         <li class="list-group-item">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <strong>{{ tarefa.nome }}</strong> 
-                    <span class="text-muted">(Prazo: {{ tarefa.prazo }})</span>
+                    <strong>{{ tarefa.nome }} - Prioridade: {{ tarefa.prioridade }}</strong>
+                    <p><span class="text-muted">(Prazo: {{ tarefa.prazo }})</span></p>
                     <p>{{ tarefa.descricao }}</p>
                 </div>
-                <!-- Botão para Editar Tarefa -->
-                <a href="{{ url_for('editar_tarefa', tarefa_id=tarefa.id) }}" class="btn btn-sm btn-secondary">Editar</a>
+                <!-- Agrupa os botões de editar e deletar -->
+                <div class="btn-group" role="group">
+                    <!-- Botão para editar -->
+                    <a href="{{ url_for('editar_tarefa', tarefa_id=tarefa.id) }}" class="btn btn-warning">Editar</a>
+
+                    <!-- Botão para deletar -->
+                    <form action="{{ url_for('deletar_tarefa', tarefa_id=tarefa.id) }}" method="POST"
+                        style="display:inline;">
+                        <input type="hidden" name="projeto_id" value="{{ page.projeto.id }}">
+                        <button type="submit" class="btn btn-danger">Deletar</button>
+                    </form>
+                </div>
             </div>
         </li>
         {% else %}
@@ -81,13 +113,39 @@
     <h3 class="mt-4">Equipe do Projeto</h3>
     <ul class="list-group">
         {% for membro in page.membros %}
-        <li class="list-group-item">
-            {{ membro.nome }} 
-            <span class="text-muted">({{ membro.email }})</span>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ membro.nome }}
+            <form method="POST"
+                action="{{ url_for('remover_membro', projeto_id=page['projeto']['id'], membro_id=membro.id) }}"
+                class="mb-0">
+                <button type="submit" class="btn btn-danger ml-3">Remover</button>
+            </form>
         </li>
         {% else %}
         <li class="list-group-item text-muted">Nenhum membro atribuído.</li>
         {% endfor %}
     </ul>
+
+
+    <!-- Adicionar Membro ao Projeto -->
+    <h3 class="mt-4">Adicionar Membro ao Projeto</h3>
+    <form method="POST" action="{{ url_for('adicionar_membro', projeto_id=page['projeto']['id']) }}">
+        <div class="form-group">
+            <label for="membro">Selecione um Membro</label>
+            <select class="form-control" id="membro" name="membro_id" required>
+                {% for membro in page['todos_membros'] %}
+                <option value="{{ membro.id }}">{{ membro.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Adicionar Membro</button>
+    </form>
+
+    <div>
+        <!-- Botão Voltar para a Página Inicial -->
+        <a href="{{ url_for('index') }}" class="btn btn-primary mt-3 mr-3">Voltar para a Página Inicial</a>
+    </div>
+    
+
 </div>
 {% endblock %}

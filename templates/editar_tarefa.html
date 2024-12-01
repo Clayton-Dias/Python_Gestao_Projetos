@@ -1,80 +1,43 @@
 {% extends '_layout.html' %}
 
-{% block title %}Editar Tarefa - Gestão de Projetos{% endblock %}
+{% block title %}Editar Tarefa{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="my-4">Editar Tarefa</h1>
-
-    <!-- Formulário para editar tarefa -->
+<div class="container mt-4">
+    <h1>Editar Tarefa</h1>
     <form action="{{ url_for('editar_tarefa', tarefa_id=tarefa['id']) }}" method="POST">
-        <!-- Campo: Nome da Tarefa -->
-        <div class="form-group">
-            <label for="nome">Nome da Tarefa</label>
-            <input 
-                type="text" 
-                class="form-control" 
-                id="nome" 
-                name="nome" 
-                value="{{ tarefa[1] }}" 
-                placeholder="Digite o nome da tarefa" 
-                required>
+        <div class="mb-3">
+            <label for="nome" class="form-label">Nome</label>
+            <input type="text" class="form-control" id="nome" name="nome" value="{{ tarefa['nome'] }}" required>
         </div>
-
-        <!-- Campo: Descrição -->
-        <div class="form-group">
-            <label for="descricao">Descrição</label>
-            <textarea 
-                class="form-control" 
-                id="descricao" 
-                name="descricao" 
-                rows="3" 
-                placeholder="Descreva os detalhes da tarefa" 
-                required>{{ tarefa[2] }}</textarea>
+        <div class="mb-3">
+            <label for="descricao" class="form-label">Descrição</label>
+            <textarea class="form-control" id="descricao" name="descricao" rows="3" required>{{ tarefa['descricao'] }}</textarea>
         </div>
-
-        <!-- Campo: Prazo -->
-        <div class="form-group">
-            <label for="prazo">Prazo</label>
-            <input 
-                type="datetime-local" 
-                class="form-control" 
-                id="prazo" 
-                name="prazo" 
-                value="{{ tarefa[3]|replace(' ', 'T') }}" 
-                required>
+        <div class="mb-3">
+            <label for="prazo" class="form-label">Prazo</label>
+            <input type="date" class="form-control" id="prazo" name="prazo" value="{{ tarefa['prazo'] }}" required>
         </div>
-
-        <!-- Campo: Prioridade -->
-        <div class="form-group">
-            <label for="prioridade">Prioridade</label>
-            <select 
-                class="form-control" 
-                id="prioridade" 
-                name="prioridade" 
-                required>
-                <option value="Alta" {% if tarefa[4] == 'Alta' %} selected {% endif %}>Alta</option>
-                <option value="Média" {% if tarefa[4] == 'Média' %} selected {% endif %}>Média</option>
-                <option value="Baixa" {% if tarefa[4] == 'Baixa' %} selected {% endif %}>Baixa</option>
+        <div class="mb-3">
+            <label for="prioridade" class="form-label">Prioridade</label>
+            <select class="form-select" id="prioridade" name="prioridade" required>
+                <option value="Alta" {% if tarefa['prioridade'] == 'Alta' %}selected{% endif %}>Alta</option>
+                <option value="Média" {% if tarefa['prioridade'] == 'Média' %}selected{% endif %}>Média</option>
+                <option value="Baixa" {% if tarefa['prioridade'] == 'Baixa' %}selected{% endif %}>Baixa</option>
             </select>
         </div>
-
-        <!-- Campo: Status -->
-        <div class="form-group">
-            <label for="status">Status</label>
-            <select 
-                class="form-control" 
-                id="status" 
-                name="status" 
-                required>
-                <option value="Pendente" {% if tarefa[5] == 'Pendente' %} selected {% endif %}>Pendente</option>
-                <option value="Em Andamento" {% if tarefa[5] == 'Em Andamento' %} selected {% endif %}>Em Andamento</option>
-                <option value="Concluída" {% if tarefa[5] == 'Concluída' %} selected {% endif %}>Concluída</option>
+        <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select class="form-select" id="status" name="status" required>
+                <option value="Pendente" {% if tarefa['status'] == 'Pendente' %}selected{% endif %}>Pendente</option>
+                <option value="Em andamento" {% if tarefa['status'] == 'Em andamento' %}selected{% endif %}>Em andamento</option>
+                <option value="Concluída" {% if tarefa['status'] == 'Concluída' %}selected{% endif %}>Concluída</option>
             </select>
         </div>
-
-        <!-- Botão de submissão -->
+        <input type="hidden" name="projeto_id" value="{{ tarefa['projeto_id'] }}">
         <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        <a href="{{ url_for('projeto', projeto_id=tarefa['projeto_id']) }}" class="btn btn-secondary">Cancelar</a>
+
     </form>
 </div>
 {% endblock %}

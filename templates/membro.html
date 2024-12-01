@@ -11,29 +11,20 @@
         <!-- Campo: Nome do Membro -->
         <div class="form-group">
             <label for="nome">Nome do Membro</label>
-            <input 
-                type="text" 
-                class="form-control" 
-                id="nome" 
-                name="nome" 
-                placeholder="Digite o nome completo" 
-                required>
+            <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite o nome completo" required>
         </div>
 
         <!-- Campo: E-mail do Membro -->
         <div class="form-group">
             <label for="email">E-mail do Membro</label>
-            <input 
-                type="email" 
-                class="form-control" 
-                id="email" 
-                name="email" 
-                placeholder="Digite o e-mail válido" 
+            <input type="email" class="form-control" id="email" name="email" placeholder="Digite o e-mail válido"
                 required>
         </div>
 
         <!-- Botão para enviar o formulário -->
         <button type="submit" class="btn btn-primary">Adicionar Membro</button>
+        <!-- Botão de Cancelar -->
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
 {% endblock %}

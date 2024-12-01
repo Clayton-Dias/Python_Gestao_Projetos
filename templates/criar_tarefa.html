@@ -4,8 +4,9 @@
 
 {% block content %}
 <div class="container">
+
     <!-- Título da Página -->
-    <h1 class="my-4">Criar Tarefa</h1>
+    <h1 class="my-4">Criar Nova Tarefa para o Projeto: {{ projeto_id }}</h1>
 
     <!-- Formulário para criação de tarefa -->
     <form action="{{ url_for('criar_tarefa', projeto_id=projeto_id) }}" method="POST">
@@ -41,6 +42,10 @@
         </div>
 
         <!-- Botão de Submissão -->
-        <button type="submit" class="btn btn-primary">Criar
+        <button type="submit" class="btn btn-primary">Criar Tarefa</button>
+        <!-- Botão de Cancelar - Criar Tarefa -->
+        <a href="{{ url_for('projeto', projeto_id=projeto_id) }}" class="btn btn-secondary">Cancelar</a>
 
-{% endblock %}
+    </form>
+
+    {% endblock %}

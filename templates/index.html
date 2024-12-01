@@ -14,17 +14,26 @@
     <!-- Lista de Projetos -->
     <h3>Projetos</h3>
     {% if projetos %}
-        <div class="list-group">
-            {% for projeto in projetos %}
+    <div class="list-group">
+        {% for projeto in projetos %}
+        <div class="list-group-item d-flex justify-content-between align-items-center">
             <a href="{{ url_for('projeto', projeto_id=projeto['id']) }}" class="list-group-item list-group-item-action">
                 <h5 class="mb-1">{{ projeto['nome'] }}</h5>
                 <p class="mb-1">{{ projeto['descricao'] }}</p>
                 <small>Responsável: {{ projeto['responsavel_nome'] }}</small>
             </a>
-            {% endfor %}
+
+            <!-- Botão de deletar -->
+            <form method="POST" action="{{ url_for('deletar_projeto', projeto_id=projeto['id']) }}" class="mb-0">
+                <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
+            </form>
         </div>
+        {% endfor %}
+    </div>
     {% else %}
-        <p class="text-muted">Nenhum projeto encontrado. Clique em "Criar Novo Projeto" para começar.</p>
+    <p class="text-muted">Nenhum projeto encontrado. Clique em "Criar Novo Projeto" para começar.</p>
     {% endif %}
+    
 </div>
+
 {% endblock %}

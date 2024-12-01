@@ -1,0 +1,18 @@
+5. Próximos Passos
+Se desejar adicionar mais funcionalidades, algumas sugestões seriam:
+
+- Autenticação de Usuários: Permitir login e controle de acesso (diferentes permissões para administradores, gerentes e membros).
+
+- Relatórios: Exibição de relatórios detalhados sobre o progresso do projeto.
+
+- Notificações: Alertas para prazos de tarefas ou alterações no projeto.
+
+- Segurança:
+    -> Adicionar validações para entradas de usuário para prevenir SQL Injection.
+    -> Implementar autenticação e controle de acesso para proteger as rotas.
+
+Validação de Dados:
+    -> Usar pacotes como WTForms ou marshmallow para validar formulários e inputs.
+
+Testes:
+    -> Criar testes unitários e de integração para validar o funcionamento das rotas e dos módulos.
