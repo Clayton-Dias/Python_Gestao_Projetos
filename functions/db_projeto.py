@@ -127,11 +127,11 @@ def search_project(mysql, termo_busca, pagina_atual):
     # Consulta de busca
     sql = """
             SELECT * FROM projeto
-            WHERE nome LIKE %s
+            WHERE nome LIKE %s OR descricao LIKE %s
             ORDER BY data_inicio DESC
             LIMIT %s OFFSET %s
         """
-    valores = (f"%{termo_busca}%", 5, (pagina_atual - 1) * 5)
+    valores = (f"%{termo_busca}%",f"%{termo_busca}%", 5, (pagina_atual - 1) * 5)
 
     cur = mysql.connection.cursor()
     cur.execute(sql, valores)

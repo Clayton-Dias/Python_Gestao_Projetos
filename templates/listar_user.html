@@ -1,0 +1,40 @@
+{% extends '_layout.html' %}
+
+{% block title %}Gerenciar usuário - Gestão de Projetos{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="my-4">Gerenciar usuário</h2>
+
+    <!-- Tabela de usuário -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Permissão</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario.id }}</td>
+                <td>{{ usuario.nome }}</td>
+                <td>{{ usuario.email }}</td>
+                <td>{{ usuario.permissao }}</td>
+                <td>
+                    <!-- Botão de editar usuário -->
+                    {% if current_user.permissao in ['administrador', 'gerente'] %}
+                    <a href="{{ url_for('editar_usuario', usuario_id=usuario.id) }}" class="btn btn-warning btn-sm">
+                        Editar
+                    </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

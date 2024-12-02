@@ -15,27 +15,50 @@
         <div class="container">
             <h1>Gestão de Projetos</h1>
         </div>
-
     </header>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
+            <!-- Navbar Brand -->
             <a class="navbar-brand" href="{{ url_for('index') }}">Início</a>
+
+            <!-- Navbar Toggler (Mobile View) -->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
+
+            <!-- Navbar Links -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav mr-auto">
+                    <!-- Link: Gerenciar Membros -->
                     <li class="nav-item">
-                        <a href="{{ url_for('listar_membros') }}" class="btn btn-primary">Gerenciar Membros</a>
+                        <a href="{{ url_for('listar_membros') }}" class="nav-link">Gerenciar Membros</a>
+                    </li>
+
+                    <!-- Link: Criar Novo Projeto -->
+                    <li class="nav-item">
+                        <a href="{{ url_for('criar_projeto') }}" class="nav-link">Criar Novo Projeto</a>
+                    </li>
+
+                    <!-- Link: Gerenciar Usuários -->
+                    <li class="nav-item">
+                        <a href="{{ url_for('listar_user') }}" class="nav-link">Gerenciar Usuários</a>
                     </li>
                 </ul>
-            </div>
-            <!-- Botão para criar um novo projeto -->
-            <div class="text-right mb-3">
-                <a href="{{ url_for('criar_projeto') }}" class="btn btn-primary">Criar Novo Projeto</a>
+
+                <!-- Auth Links -->
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+                    </li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </nav>
@@ -44,7 +67,44 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer>&copy; 2024 Gestão de Projetos - XYZ</footer>
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <!-- About Section -->
+                <div class="col-md-4">
+                    <h5>Sobre</h5>
+                    <p>Gestão de Projetos é uma plataforma dedicada a ajudar equipes a gerenciar e organizar seus projetos de forma eficiente e colaborativa.</p>
+                </div>
+    
+                <!-- Useful Links -->
+                <div class="col-md-4">
+                    <h5>Links Úteis</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('index') }}" class="text-white">Início</a></li>
+                        <li><a href="{{ url_for('listar_membros') }}" class="text-white">Gerenciar Membros</a></li>
+                        <li><a href="{{ url_for('criar_projeto') }}" class="text-white">Criar Novo Projeto</a></li>
+                        <li><a href="{{ url_for('listar_user') }}" class="text-white">Gerenciar Usuários</a></li>
+                    </ul>
+                </div>
+    
+                <!-- Contact Section -->
+                <div class="col-md-4">
+                    <h5>Contato</h5>
+                    <ul class="list-unstyled">
+                        <li>Email: suporte@gestaoprojetos.com</li>
+                        <li>Telefone: (11) 1234-5678</li>
+                        <li><a href="#" class="text-white">Fale Conosco</a></li>
+                    </ul>
+                </div>
+            </div>
+    
+            <hr class="border-secondary">
+            
+            <div class="text-center">
+                &copy; 2024 Gestão de Projetos - Todos os direitos reservados.
+            </div>
+        </div>
+    </footer>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
