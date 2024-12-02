@@ -6,14 +6,18 @@ from config import Config
 
 # Importação dos módulos responsáveis por funcionalidades específicas
 from modules.adicionarMembro import mod_adicionar_membro
+from modules.buscar import mod_buscar
 from modules.criarMembro import mod_criar_membro
 from modules.criarProjeto import mod_criar_projeto
 from modules.criarTarefa import mod_criar_tarefa
 from modules.deletarProjeto import mod_deletar_projeto
 from modules.deletarTarefa import mod_deletar_tarefa
+from modules.editarMembro import mod_editar_membro
 from modules.editarProjeto import mod_editar_projeto
 from modules.editarTarefa import mod_editar_tarefa
+from modules.excluirMembro import mod_excluir_membro
 from modules.index import mod_index
+from modules.listarMembro import mod_listar_membros
 from modules.projeto import mod_projeto
 from modules.removerMembro import mod_remover_membro
 from modules.start import mod_start
@@ -32,7 +36,7 @@ mysql = MySQL(app)
 def before_request():
     return mod_start(mysql)  # Configurações gerais do ambiente (e.g., charset)
 
-# Rota principal para a página inicial com paginação
+# Rota principal para a página inicial
 @app.route('/')
 def index():
     return mod_index(mysql)  # Redireciona para a função do módulo `index`
@@ -86,6 +90,22 @@ def remover_membro(projeto_id, membro_id):
 @app.route('/projeto/<int:projeto_id>/adicionar_membro', methods=['POST'])
 def adicionar_membro(projeto_id):
     return mod_adicionar_membro(mysql, projeto_id)  # Lógica de adição no módulo
+
+@app.route('/membros')
+def listar_membros():
+    return mod_listar_membros(mysql)
+
+@app.route('/membros/editar/<int:membro_id>', methods=['GET', 'POST'])
+def editar_membro(membro_id):
+    return mod_editar_membro(mysql, membro_id)
+
+@app.route('/membros/excluir/<int:membro_id>', methods=['POST'])
+def excluir_membro(membro_id):
+    return mod_excluir_membro(mysql, membro_id)
+
+@app.route('/buscar', methods=['GET'])
+def buscar():
+    return mod_buscar(mysql)
 
 # Inicia o servidor Flask no modo de depuração
 if __name__ == "__main__":

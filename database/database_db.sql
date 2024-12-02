@@ -10,6 +10,20 @@ CREATE DATABASE projeto_gestao
 USE projeto_gestao;
 
 -- =======================================
+-- Tabela `usuários`
+-- Armazena informações para autenticação de Usuários: Permitir login e 
+-- controle de acesso (diferentes permissões para administradores, gerentes e membros)
+-- =======================================
+
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    senha_hash VARCHAR(255) NOT NULL,
+    permissao ENUM('administrador', 'gerente', 'membro') NOT NULL DEFAULT 'membro'
+);
+
+-- =======================================
 -- Tabela `membro`
 -- Armazena informações dos membros (usuários do sistema)
 -- =======================================

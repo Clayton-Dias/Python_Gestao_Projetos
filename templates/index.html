@@ -6,9 +6,13 @@
 <div class="container">
     <h1 class="my-4">Gestão de Projetos</h1>
 
-    <!-- Botão para criar um novo projeto -->
-    <div class="text-right mb-3">
-        <a href="{{ url_for('criar_projeto') }}" class="btn btn-primary">Criar Novo Projeto</a>
+    <!-- Cabeçalho com busca -->
+    <div class="d-flex justify-content-end mb-3">
+        <form method="get" action="{{ url_for('buscar') }}" class="d-flex">
+            <input type="text" name="search" placeholder="Buscar projetos..."
+                value="{{ request.args.get('search', '') }}" class="form-control me-2">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
     </div>
 
     <!-- Lista de Projetos -->
@@ -23,6 +27,11 @@
                 <small>Responsável: {{ projeto['responsavel_nome'] }}</small>
             </a>
 
+            <!-- Botão Editar Projeto -->
+            <a href="{{ url_for('editar_projeto', projeto_id=projeto['id']) }}"
+                class="btn btn-warning btn-sm">Editar</a>
+
+
             <!-- Botão de deletar -->
             <form method="POST" action="{{ url_for('deletar_projeto', projeto_id=projeto['id']) }}" class="mb-0">
                 <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
@@ -33,7 +42,41 @@
     {% else %}
     <p class="text-muted">Nenhum projeto encontrado. Clique em "Criar Novo Projeto" para começar.</p>
     {% endif %}
-    
+
+    <!--Páginação do projeto, com limite 5 projetos por página-->
+    <div class="pagination">
+        <ul class="pagination">
+            <!-- Botão para a página anterior -->
+            {% if pagina_atual > 1 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('index', pagina=pagina_atual - 1) }}">Anterior</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Anterior</span>
+            </li>
+            {% endif %}
+
+            <!-- Links para todas as páginas -->
+            {% for pagina in range(1, total_paginas + 1) %}
+            <li class="page-item {% if pagina == pagina_atual %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('index', pagina=pagina) }}">{{ pagina }}</a>
+            </li>
+            {% endfor %}
+
+            <!-- Botão para a próxima página -->
+            {% if pagina_atual < total_paginas %} <li class="page-item">
+                <a class="page-link" href="{{ url_for('index', pagina=pagina_atual + 1) }}">Próximo</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Próximo</span>
+                </li>
+                {% endif %}
+        </ul>
+    </div>
+
 </div>
+
 
 {% endblock %}

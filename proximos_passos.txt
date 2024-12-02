@@ -1,5 +1,8 @@
-5. Próximos Passos
+Próximos Passos
+
 Se desejar adicionar mais funcionalidades, algumas sugestões seriam:
+
+- Editar membros: permitir a edição de membros cadastrados (CONCLUIDO)
 
 - Autenticação de Usuários: Permitir login e controle de acesso (diferentes permissões para administradores, gerentes e membros).
 

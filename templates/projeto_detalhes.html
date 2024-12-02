@@ -11,10 +11,7 @@
     <!-- Informações do Projeto -->
     <p><strong>Descrição:</strong> {{ page.projeto.descricao }}</p>
     <p><strong>Responsável:</strong> {{ page.projeto.responsavel_nome }}</p>
-    <!-- Botão para Editar Projeto -->
-    <a href="{{ url_for('editar_projeto', projeto_id=page.projeto.id) }}" class="btn btn-primary my-3">Editar
-        Projeto</a>
-
+    
     <!-- Botão para criar nova tarefa -->
     <a href="{{ url_for('criar_tarefa', projeto_id=page.projeto['id']) }}" class="btn btn-primary">Criar Tarefa</a>
 
