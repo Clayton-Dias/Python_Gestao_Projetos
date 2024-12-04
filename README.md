@@ -1,7 +1,6 @@
-
-```markdown
 # Projeto Final do curso de Programação Python do SENAC.
 
+```markdown
 # Sistema de Gestão de Projetos com Flask
 
 Este é um sistema de gestão de projetos desenvolvido com **Flask** e **MySQL**, projetado para atender diferentes perfis de usuários (administradores, gerentes e membros). Ele permite gerenciar usuários, projetos, tarefas e equipes de forma simples e eficiente.
