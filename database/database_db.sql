@@ -15,7 +15,7 @@ USE projeto_gestao;
 -- controle de acesso (diferentes permissões para administradores, gerentes e membros)
 -- =======================================
 
-CREATE TABLE usuarios (
+CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -101,4 +101,7 @@ INSERT INTO projeto_membro (projeto_id, membro_id) VALUES
     (1, 2),  -- Maria está no Projeto A
     (2, 3);  -- Carlos está no Projeto B
 
-
+--- Adiciona usuarios fictícios para testes
+INSERT INTO usuarios (nome, email, senha, permissao ) VALUES 
+    ('admin','admin@mail.com','123456','administrador'),
+    ('gerente_teste','gerente@mail.com','654321','gerente');
