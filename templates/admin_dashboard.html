@@ -1,0 +1,110 @@
+{% extends '_layout.html' %}
+
+{% block title %}Painel Administrativo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Painel Administrativo</h1>
+
+    <!-- Estatísticas Rápidas -->
+    <div class="row text-center mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total de Usuários</h5>
+                    <p class="card-text display-4">{{ total_usuarios }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Projetos Ativos</h5>
+                    <p class="card-text display-4">{{ total_projetos }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Gerentes</h5>
+                    <p class="card-text display-4">{{ total_gerentes }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Atalhos de Ações -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <a href="{{ url_for('criar_usuario') }}" class="btn btn-primary btn-block">
+                Criar Usuário
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('criar_projeto') }}" class="btn btn-success btn-block">
+                Criar Projeto
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('listar_user') }}" class="btn btn-info btn-block">
+                Gerenciar Usuários
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('index') }}" class="btn btn-warning btn-block">
+                Gerenciar Projetos
+            </a>
+        </div>
+    </div>
+
+    <!-- Tabelas de Resumo -->
+    <div class="row">
+        <!-- Tabela de Usuários -->
+        <div class="col-md-6">
+            <h3>Usuários Recentes</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Permissão</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios_recentes %}
+                    <tr>
+                        <td>{{ usuario.nome }}</td>
+                        <td>{{ usuario.email }}</td>
+                        <td>{{ usuario.permissao }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tabela de Projetos -->
+        <div class="col-md-6">
+            <h3>Projetos Recentes</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Responsável</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for projeto in projetos_recentes %}
+                    <tr>
+                        <td>{{ projeto.nome }}</td>
+                        <td>{{ projeto.descricao }}</td>
+                        <td>{{ projeto.responsavel }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

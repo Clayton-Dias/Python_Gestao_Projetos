@@ -88,6 +88,7 @@ INSERT INTO membro (nome, email) VALUES
 INSERT INTO projeto (nome, descricao, responsavel_id) VALUES 
     ('Projeto A', 'Este é o primeiro projeto.', 1),
     ('Projeto B', 'Este é o segundo projeto.', 2);
+    ('Projeto C', 'Este é o terceiro projeto.', 3);
 
 -- Adiciona tarefas fictícias associadas aos projetos
 INSERT INTO tarefa (nome, descricao, prazo, projeto_id, prioridade) VALUES 
@@ -100,8 +101,3 @@ INSERT INTO projeto_membro (projeto_id, membro_id) VALUES
     (1, 1),  -- João está no Projeto A
     (1, 2),  -- Maria está no Projeto A
     (2, 3);  -- Carlos está no Projeto B
-
---- Adiciona usuarios fictícios para testes
-INSERT INTO usuarios (nome, email, senha, permissao ) VALUES 
-    ('admin','admin@mail.com','123456','administrador'),
-    ('gerente_teste','gerente@mail.com','654321','gerente');

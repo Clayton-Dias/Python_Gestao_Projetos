@@ -10,7 +10,7 @@ def create_task(mysql, projeto_id):
             INSERT INTO tarefa (nome, descricao, prazo, prioridade, projeto_id)
             VALUES (%s, %s, %s, %s, %s)
         '''
-    cur = mysql.connection.cursor()
+    cur = mysql.connection.cursor()  # Cria um cursor para executar a consulta
     # Executa o comando SQL com os valores fornecidos no formulário
     cur.execute(sql, (request.form['nome'], request.form['descricao'],
                 prazo, request.form['prioridade'], projeto_id))
@@ -19,7 +19,7 @@ def create_task(mysql, projeto_id):
 
 def update_task(mysql, tarefa_id):
     # Obtém o prazo do formulário e remove qualquer sufixo 'T00:00' (se existir)
-    prazo_str = request.form['prazo'].split('T')[0]
+    prazo_str = request.form['prazo'].split('T')[0]  # Separa apenas a data sem a parte do tempo
     prazo = datetime.strptime(prazo_str, '%Y-%m-%d')  # Converte para datetime
 
     # SQL para atualizar os detalhes de uma tarefa específica
@@ -28,7 +28,7 @@ def update_task(mysql, tarefa_id):
             SET nome = %s, descricao = %s, prazo = %s, prioridade = %s, status = %s 
             WHERE id = %s
         '''
-    cur = mysql.connection.cursor()
+    cur = mysql.connection.cursor()  # Cria um cursor
     # Executa o comando SQL com os valores fornecidos no formulário
     cur.execute(sql, (request.form['nome'], request.form['descricao'], prazo,
                       request.form['prioridade'], request.form['status'], tarefa_id))
@@ -38,7 +38,7 @@ def update_task(mysql, tarefa_id):
 def get_details_task(mysql, tarefa_id):
     # SQL para obter os detalhes de uma tarefa específica pelo ID
     sql = "SELECT * FROM tarefa WHERE id = %s"
-    cur = mysql.connection.cursor()
+    cur = mysql.connection.cursor()  # Cria um cursor
     cur.execute(sql, [tarefa_id])  # Executa o comando com o ID da tarefa
     tarefa = cur.fetchone()  # Recupera o resultado
     cur.close()  # Fecha o cursor
@@ -51,11 +51,11 @@ def get_task_pending(mysql, projeto_id):
         WHERE projeto_id = %s AND status = 'Pendente' 
         ORDER BY prioridade DESC
     '''
-    cur = mysql.connection.cursor()
+    cur = mysql.connection.cursor()  # Cria um cursor
     cur.execute(sql, [projeto_id])  # Executa o comando com o ID do projeto
     tarefas_pendentes = cur.fetchall()  # Recupera todas as tarefas pendentes
-    cur.close()
-    return tarefas_pendentes
+    cur.close()  # Fecha o cursor
+    return tarefas_pendentes  # Retorna as tarefas pendentes
 
 def get_task_progess(mysql, projeto_id):
     # SQL para obter tarefas em andamento de um projeto
@@ -64,11 +64,11 @@ def get_task_progess(mysql, projeto_id):
         WHERE projeto_id = %s AND status = 'Em andamento' 
         ORDER BY prioridade DESC
     '''
-    cur = mysql.connection.cursor()
-    cur.execute(sql, [projeto_id])
-    tarefas_andamento = cur.fetchall()
-    cur.close()
-    return tarefas_andamento
+    cur = mysql.connection.cursor()  # Cria um cursor
+    cur.execute(sql, [projeto_id])  # Executa o comando com o ID do projeto
+    tarefas_andamento = cur.fetchall()  # Recupera todas as tarefas em andamento
+    cur.close()  # Fecha o cursor
+    return tarefas_andamento  # Retorna as tarefas em andamento
 
 def get_task_completed(mysql, projeto_id):
     # SQL para obter tarefas concluídas de um projeto
@@ -77,18 +77,16 @@ def get_task_completed(mysql, projeto_id):
        WHERE projeto_id = %s AND status = 'Concluída' 
        ORDER BY prioridade DESC
     '''
-    cur = mysql.connection.cursor()
-    cur.execute(sql, [projeto_id])
-    tarefas_concluidas = cur.fetchall()
-    cur.close()
-    return tarefas_concluidas
+    cur = mysql.connection.cursor()  # Cria um cursor
+    cur.execute(sql, [projeto_id])  # Executa o comando com o ID do projeto
+    tarefas_concluidas = cur.fetchall()  # Recupera todas as tarefas concluídas
+    cur.close()  # Fecha o cursor
+    return tarefas_concluidas  # Retorna as tarefas concluídas
 
 def delete_task(mysql, tarefa_id):
     # SQL para deletar uma tarefa pelo ID
     sql = "DELETE FROM tarefa WHERE id = %s"
-    cur = mysql.connection.cursor()
+    cur = mysql.connection.cursor()  # Cria um cursor
     cur.execute(sql, [tarefa_id])  # Executa o comando com o ID da tarefa
-    mysql.connection.commit()  # Confirma a exclusão
+    mysql.connection.commit()  # Confirma a exclusão da tarefa no banco de dados
     cur.close()  # Fecha o cursor
-
-

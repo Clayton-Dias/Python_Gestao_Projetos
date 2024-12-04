@@ -29,7 +29,7 @@ def create_project(mysql):
     # Executa a consulta com os dados enviados pelo formulário
     cur.execute(sql, (request.form['nome'], request.form['descricao'],
                 request.form['responsavel_id'], datetime.utcnow()))
-    mysql.connection.commit()  # Confirma a transação
+    mysql.connection.commit()  # Confirma a transação no banco de dados
     cur.close()  # Fecha o cursor
 
 
@@ -37,15 +37,15 @@ def create_project(mysql):
 def update_project(mysql, projeto_id):
     # SQL para atualizar os dados de um projeto
     sql = '''
-            UPDATE projeto 
-            SET nome = %s, descricao = %s, responsavel_id = %s 
+            UPDATE projeto
+            SET nome = %s, descricao = %s, responsavel_id = %s
             WHERE id = %s
         '''
     cur = mysql.connection.cursor()  # Cria um cursor
     # Executa a consulta com os novos dados enviados pelo formulário
     cur.execute(sql, (request.form['nome'], request.form['descricao'],
                 request.form['responsavel_id'], projeto_id))
-    mysql.connection.commit()  # Confirma a transação
+    mysql.connection.commit()  # Confirma a transação no banco de dados
     cur.close()  # Fecha o cursor
 
 
@@ -96,58 +96,109 @@ def delete_project(mysql, projeto_id):
     # SQL para deletar o próprio projeto
     cur.execute("DELETE FROM projeto WHERE id = %s", [projeto_id])
 
-    mysql.connection.commit()  # Confirma as transações
+    mysql.connection.commit()  # Confirma as transações no banco de dados
     cur.close()  # Fecha o cursor
 
 
 def count_project(mysql):
+    # Contabiliza o número total de projetos
+    cur = mysql.connection.cursor()  # Cria um cursor
+    cur.execute("SELECT COUNT(*) AS total FROM projeto")  # Executa a contagem
+    total_projetos = cur.fetchone()['total']  # Obtém o total de projetos
+    cur.close()  # Fecha o cursor
 
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT COUNT(*) AS total FROM projeto")
-    total_projetos = cur.fetchone()['total']
-    cur.close()
-
-    return total_projetos
+    return total_projetos  # Retorna o total de projetos
 
 
 def get_projects_current_page(mysql, itens_por_pagina, offset):
+    # Função para retornar os projetos na página atual, com base no limite de itens por página e offset
+    sql = '''
+        SELECT
+            p.id,
+            p.nome AS nome,
+            p.descricao AS descricao,
+            u.nome AS responsavel_nome
+        FROM
+            projeto p
+        JOIN
+            usuarios u
+        ON
+            p.responsavel_id = u.id
+        LIMIT %s OFFSET %s
+    '''
 
-    sql = "SELECT * FROM projeto LIMIT %s OFFSET %s"
+    cur = mysql.connection.cursor()  # Cria um cursor
+    cur.execute(sql, (itens_por_pagina, offset))  # Executa a consulta com limites de paginação
+    projetos = cur.fetchall()  # Recupera os resultados
+    cur.close()  # Fecha o cursor
 
-    cur = mysql.connection.cursor()
-    cur.execute(sql, (itens_por_pagina, offset))
-    projetos = cur.fetchall()
-    cur.close()
-
-    return projetos
+    return projetos  # Retorna a lista de projetos da página atual
 
 
 def search_project(mysql, termo_busca, pagina_atual):
-
-    # Consulta de busca
+    # Função para realizar a busca de projetos com base em um termo
     sql = """
             SELECT * FROM projeto
             WHERE nome LIKE %s OR descricao LIKE %s
             ORDER BY data_inicio DESC
             LIMIT %s OFFSET %s
         """
-    valores = (f"%{termo_busca}%",f"%{termo_busca}%", 5, (pagina_atual - 1) * 5)
+    valores = (f"%{termo_busca}%", f"%{termo_busca}%",
+               5, (pagina_atual - 1) * 5)  # Limita a 5 resultados por página
 
-    cur = mysql.connection.cursor()
-    cur.execute(sql, valores)
-    projetos = cur.fetchall()
-    cur.close()
+    cur = mysql.connection.cursor()  # Cria um cursor
+    cur.execute(sql, valores)  # Executa a consulta com os parâmetros de busca
+    projetos = cur.fetchall()  # Recupera os resultados
+    cur.close()  # Fecha o cursor
 
-    return projetos
+    return projetos  # Retorna os projetos encontrados
 
 
 def count_project_search(mysql, termo_busca):
-
+    # Conta o número total de projetos encontrados pela busca
     sql = "SELECT COUNT(*) AS total FROM projeto WHERE nome LIKE %s"
-    
-    cur = mysql.connection.cursor()
-    cur.execute(sql, (f"%{termo_busca}%",))  # Passa o valor como uma tupla
-    result = cur.fetchone()
-    return result['total']
+
+    cur = mysql.connection.cursor()  # Cria um cursor
+    cur.execute(sql, (f"%{termo_busca}%",))  # Executa a consulta com o termo de busca
+    result = cur.fetchone()  # Obtém o resultado da contagem
+    return result['total']  # Retorna o total de projetos encontrados
 
 
+def get_projetos_por_gerente(mysql, gerente_id):
+    # Retorna os projetos atribuídos a um gerente específico
+    sql = "SELECT * FROM projeto WHERE gerente_id = %s"
+
+    cur = mysql.connection.cursor()  # Cria um cursor
+    cur.execute(sql, (gerente_id,))  # Executa a consulta com o ID do gerente
+    projetos = cur.fetchall()  # Recupera os projetos
+    cur.close()  # Fecha o cursor
+
+    return projetos  # Retorna a lista de projetos do gerente
+
+
+def get_projetos_recentes(mysql, limite=5):
+    # Retorna os projetos mais recentes, com base no limite definido (default 5)
+    sql = """
+            SELECT * FROM projeto
+            ORDER BY data_inicio DESC
+            LIMIT %s
+        """
+
+    cur = mysql.connection.cursor()  # Cria um cursor
+    cur.execute(sql, (limite,))  # Executa a consulta com o limite de resultados
+    projetos = cur.fetchall()  # Recupera os resultados
+    cur.close()  # Fecha o cursor
+
+    return projetos  # Retorna a lista de projetos recentes
+
+
+def count_projetos(mysql):
+    # Conta o número total de projetos no banco de dados
+    sql = "SELECT COUNT(*) AS total FROM projeto"
+
+    cur = mysql.connection.cursor()  # Cria um cursor
+    cur.execute(sql)  # Executa a consulta
+    result = cur.fetchone()  # Obtém o resultado da contagem
+    cur.close()  # Fecha o cursor
+
+    return result['total']  # Retorna o total de projetos

@@ -1,13 +1,17 @@
 from flask import Flask, flash, render_template, request, redirect, url_for
 from flask_mysqldb import MySQL
-from flask_login import LoginManager
-from werkzeug.security import generate_password_hash
-from flask_login import login_user, logout_user, login_required, current_user
-from functions.db_usuario import get_all_users, get_user_by_email, validate_user_password, create_user, update_user
+from flask_login import logout_user, login_required, LoginManager
+from modules.adminDashboard import mod_admin_dashboard
+from modules.criarUser import mod_criar_usuario
+from modules.editUser import mod_editar_usuario
+from modules.editarPerfil import mod_editar_perfil
+from modules.listarUser import mod_listar_user
+from modules.loadUser import mod_load_user
+from modules.login import mod_login
 from utils.access_control import permission_required
 
 
-# Importação da classe Config
+# Importação da classe Config, que contém as configurações do projeto
 from config import Config
 
 # Importação dos módulos responsáveis por funcionalidades específicas
@@ -29,318 +33,167 @@ from modules.removerMembro import mod_remover_membro
 from modules.start import mod_start
 from modules.user import User
 
-app = Flask(__name__)  # Inicializa a aplicação Flask
-app.secret_key = "sua_chave_secreta"  # Substitua por uma chave segura
+# Inicializa a aplicação Flask
+app = Flask(__name__)
+app.secret_key = "sua_chave_secreta"  # Chave secreta para a sessão do Flask, substitua por algo seguro
 
-# Configurando o Flask-Login
+# Configurações do Flask-Login para gerenciamento de usuários
 login_manager = LoginManager(app)
-# Redireciona para a rota de login quando necessário
-login_manager.login_view = "login"
+login_manager.login_view = "login"  # Redireciona para a página de login se o usuário não estiver autenticado
 
-
-# Configuração do banco de dados MySQL
-# Carregar configurações do banco de dados a partir da classe Config
+# Configuração do banco de dados MySQL com base nas configurações da classe Config
 app.config.from_object(Config)
 
 # Inicializa a extensão MySQL
 mysql = MySQL(app)
 
-# Configurações globais executadas antes de cada requisição
-
-
+# Configurações executadas antes de cada requisição
 @app.before_request
 def before_request():
-    return mod_start(mysql)  # Configurações gerais do ambiente (e.g., charset)
+    return mod_start(mysql)  # Configurações gerais (e.g., charset) antes de cada requisição
 
-# Rota principal para a página inicial
-
-
+# Rota principal da aplicação, exibe a página inicial
 @app.route('/')
 @login_required
 def index():
-    return mod_index(mysql)  # Redireciona para a função do módulo `index`
+    return mod_index(mysql)  # Chama a função do módulo `index` para renderizar a página inicial
 
 # Rota para criar um novo projeto
-
-
 @app.route('/criar_projeto', methods=['GET', 'POST'])
 @login_required
 def criar_projeto():
-    # Lógica de criação de projeto está no módulo
-    return mod_criar_projeto(mysql)
+    return mod_criar_projeto(mysql)  # Chama a lógica de criação de projeto no módulo
 
-# Rota para editar um projeto existente
-
-
+# Rota para editar um projeto existente, recebe o ID do projeto
 @app.route('/editar_projeto/<int:projeto_id>', methods=['GET', 'POST'])
 @login_required
 def editar_projeto(projeto_id):
-    # Chama a lógica de edição no módulo
-    return mod_editar_projeto(mysql, projeto_id)
+    return mod_editar_projeto(mysql, projeto_id)  # Chama a lógica de edição de projeto no módulo
 
-# Rota para deletar um projeto
-
-
+# Rota para deletar um projeto, recebe o ID do projeto
 @app.route('/deletar_projeto/<int:projeto_id>', methods=['POST'])
 @login_required
 def deletar_projeto(projeto_id):
-    # Lógica de exclusão no módulo
-    return mod_deletar_projeto(mysql, projeto_id)
+    return mod_deletar_projeto(mysql, projeto_id)  # Chama a lógica de exclusão de projeto no módulo
 
-# Rota para exibir detalhes de um projeto (tarefas e membros)
-
-
+# Rota para exibir detalhes de um projeto, como tarefas e membros
 @app.route('/projeto/<int:projeto_id>', methods=['GET'])
 @login_required
 def projeto(projeto_id):
-    # Chama a lógica de detalhamento no módulo
-    return mod_projeto(mysql, projeto_id)
+    return mod_projeto(mysql, projeto_id)  # Chama a função para detalhar o projeto no módulo
 
 # Rota para criar uma nova tarefa dentro de um projeto específico
-
-
 @app.route('/criar_tarefa/<int:projeto_id>', methods=['GET', 'POST'])
 @login_required
 def criar_tarefa(projeto_id):
-    return mod_criar_tarefa(mysql, projeto_id)  # Lógica de criação de tarefas
+    return mod_criar_tarefa(mysql, projeto_id)  # Chama o módulo responsável pela criação de tarefas
 
 # Rota para editar uma tarefa existente
-
-
 @app.route('/editar_tarefa/<int:tarefa_id>', methods=['GET', 'POST'])
 @login_required
 def editar_tarefa(tarefa_id):
-    # Chama o módulo responsável pela edição
-    return mod_editar_tarefa(mysql, tarefa_id)
+    return mod_editar_tarefa(mysql, tarefa_id)  # Chama a função de edição de tarefa
 
-# Rota para deletar uma tarefa
-
-
+# Rota para deletar uma tarefa, recebe o ID da tarefa
 @app.route('/deletar_tarefa/<int:tarefa_id>', methods=['POST'])
 @login_required
 def deletar_tarefa(tarefa_id):
-    return mod_deletar_tarefa(mysql, tarefa_id)  # Módulo cuida da exclusão
+    return mod_deletar_tarefa(mysql, tarefa_id)  # Chama o módulo de exclusão de tarefa
 
 # Rota para criar um novo membro
-
-
 @app.route('/criar_membro', methods=['GET', 'POST'])
 @login_required
 def criar_membro():
-    return mod_criar_membro(mysql)  # Módulo cuida da criação de membros
+    return mod_criar_membro(mysql)  # Chama o módulo de criação de membros
 
-# Rota para remover um membro de um projeto
-
-
+# Rota para remover um membro de um projeto específico
 @app.route('/projeto/<int:projeto_id>/remover_membro/<int:membro_id>', methods=['POST'])
 @login_required
 def remover_membro(projeto_id, membro_id):
-    # Chama o módulo de remoção
-    return mod_remover_membro(mysql, projeto_id, membro_id)
+    return mod_remover_membro(mysql, projeto_id, membro_id)  # Chama o módulo de remoção de membro
 
-# Rota para adicionar um membro a um projeto
-
-
+# Rota para adicionar um membro a um projeto específico
 @app.route('/projeto/<int:projeto_id>/adicionar_membro', methods=['POST'])
 @login_required
 def adicionar_membro(projeto_id):
-    # Lógica de adição no módulo
-    return mod_adicionar_membro(mysql, projeto_id)
+    return mod_adicionar_membro(mysql, projeto_id)  # Chama o módulo de adição de membro
 
-
+# Rota para listar todos os membros
 @app.route('/membros')
 @login_required
 def listar_membros():
-    return mod_listar_membros(mysql)
+    return mod_listar_membros(mysql)  # Chama o módulo de listagem de membros
 
-
+# Rota para editar os detalhes de um membro específico
 @app.route('/membros/editar/<int:membro_id>', methods=['GET', 'POST'])
 @login_required
 def editar_membro(membro_id):
-    return mod_editar_membro(mysql, membro_id)
+    return mod_editar_membro(mysql, membro_id)  # Chama a função de edição de membro
 
-
+# Rota para excluir um membro
 @app.route('/membros/excluir/<int:membro_id>', methods=['POST'])
 @login_required
 def excluir_membro(membro_id):
-    return mod_excluir_membro(mysql, membro_id)
+    return mod_excluir_membro(mysql, membro_id)  # Chama o módulo de exclusão de membro
 
-
+# Rota para buscar projetos ou tarefas com filtros
 @app.route('/buscar', methods=['GET'])
 @login_required
 def buscar():
-    return mod_buscar(mysql)
+    return mod_buscar(mysql)  # Chama a lógica de busca no módulo
 
-
+# Função do Flask-Login para carregar um usuário baseado no ID
 @login_manager.user_loader
 def load_user(user_id):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM usuarios WHERE id = %s", (user_id,))
-    user_data = cur.fetchone()
-    cur.close()
+    return mod_load_user(mysql, user_id)
 
-    if user_data:
-        return User(user_data['id'], user_data['nome'], user_data['email'], user_data['permissao'])
-    return None
-
-
+# Rota de login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        senha = request.form['senha']
+    return mod_login(mysql)  # Chama a lógica de login no módulo
 
-        user_data = get_user_by_email(mysql, email)
-
-        if user_data and validate_user_password(user_data, senha):
-            user = User(user_data['id'], user_data['nome'],
-                        user_data['email'], user_data['permissao'])
-            login_user(user)
-            flash("Login realizado com sucesso!", "success")
-            return redirect(url_for('index'))
-        else:
-            flash("Credenciais inválidas. Tente novamente.", "danger")
-
-    return render_template('login.html')
-
-
+# Rota de logout, que encerra a sessão do usuário
 @app.route('/logout')
 def logout():
-    logout_user()
-    flash("Logout realizado com sucesso!", "success")
-    return redirect(url_for('login'))
+    logout_user()  # Encerra a sessão do usuário
+    flash("Logout realizado com sucesso!", "success")  # Exibe uma mensagem de sucesso
+    return redirect(url_for('login'))  # Redireciona para a página de login
 
-
+# Rota para o painel de administração, acessível apenas por administradores
 @app.route('/admin')
 @permission_required(['administrador'])
 def admin_dashboard():
-    return render_template('admin_dashboard.html')
+    return mod_admin_dashboard(mysql)  # Chama o painel de administração
 
-
+# Rota para o painel de gerente, acessível por administradores e gerentes
 @app.route('/gerente')
 @permission_required(['administrador', 'gerente'])
 def gerente_dashboard():
-    return render_template('gerente_dashboard.html')
+    return render_template('gerente_dashboard.html')  # Renderiza o painel do gerente
 
-
+# Rota para criar um novo usuário
 @app.route('/criar_usuario', methods=['GET', 'POST'])
 def criar_usuario():
+    return mod_criar_usuario(mysql)  # Chama a lógica de criação de usuário
 
-    if request.method == 'POST':
-        nome = request.form['nome']
-        email = request.form['email']
-        senha = request.form['senha']
-        confirmar_senha = request.form['confirmar_senha']
-        
-        permissao = request.form.get('permissao', 'membro')
-
-        # Se o usuário atual não for administrador, define a permissão como 'membro'
-        #if current_user.permissao != 'administrador':
-        #    permissao = 'membro'
-
-        # Verifica se as senhas coincidem
-        if senha != confirmar_senha:
-            flash("As senhas não coincidem.", "danger")
-            return redirect(url_for('criar_usuario'))
-
-         # Verifica se o email já está cadastrado
-        if get_user_by_email(mysql, email):
-            flash("Email já cadastrado. Faça login.", "danger")
-            return redirect(url_for('criar_usuario'))
-
-        # Criptografa a senha e cria o usuário
-        hashed_password = generate_password_hash(senha)
-        create_user(mysql, nome, email, hashed_password, permissao)
-
-        flash("Conta criada com sucesso! Faça login.", "success")
-        return redirect(url_for('login'))
-
-    return render_template('criar_usuario.html')
-
-
+# Rota para editar o perfil de um usuário
 @app.route('/editar_perfil', methods=['GET', 'POST'])
 @login_required
 def editar_perfil():
-    """Página para editar as informações do usuário."""
+    return mod_editar_perfil(mysql)  # Chama a função de edição de perfil do usuário
 
-    # Valida se o usuário tem permissão para editar o perfil
-    if current_user.permissao not in ['administrador', 'gerente']:
-        flash('Você não tem permissão para editar esse perfil.', 'danger')
-        # Redireciona para a página inicial ou outra página
-        return redirect(url_for('index'))
-
-    if request.method == 'POST':
-        # Obtém os dados do formulário
-        nome = request.form['nome']
-        email = request.form['email']
-        senha = request.form['senha']
-        permissao = request.form['permissao']
-
-        # Se a senha foi modificada, gera o hash
-        if senha:
-            senha_hash = generate_password_hash(senha)
-        else:
-            senha_hash = current_user.senha  # Mantém a senha atual se não for alterada
-
-        # Chama a função para atualizar os dados no banco
-        update_user(mysql, current_user.id, nome, email, senha_hash, permissao)
-
-        # Redireciona para a página inicial ou outra página
-        return redirect(url_for('index'))
-
-    # Se for um GET, exibe o formulário de edição com os dados atuais
-    return render_template('editar_usuario.html', usuario=current_user)
-
-
+# Rota para listar todos os usuários
 @app.route('/listar_user')
 @login_required
 def listar_user():
-    # Verifica se o usuário tem permissão
-    if current_user.permissao not in ['administrador', 'gerente']:
-        flash('Você não tem permissão para acessar esta página.', 'danger')
-        return redirect(url_for('index'))
+    return mod_listar_user(mysql)  # Chama a listagem de usuários
 
-    # Busca todos os usuários do banco de dados
-    usuarios = get_all_users(mysql)
-    return render_template('listar_user.html', usuarios=usuarios)
-
-
+# Rota para editar um usuário específico
 @app.route('/editar_usuario/<int:usuario_id>', methods=['GET', 'POST'])
 @login_required
 def editar_usuario(usuario_id):
-    if current_user.permissao not in ['administrador', 'gerente']:
-        flash("Você não tem permissão para editar usuários.", "danger")
-        return redirect(url_for('listar_user'))
+    return mod_editar_usuario(mysql, usuario_id)  # Chama a função de edição de usuário
 
-    cur = mysql.connection.cursor()
-    cur.execute(
-        "SELECT id, nome, email, permissao FROM usuarios WHERE id = %s", (usuario_id,))
-    usuario = cur.fetchone()
-    cur.close()
-
-    if not usuario:
-        flash("Usuário não encontrado.", "danger")
-        return redirect(url_for('listar_user'))
-
-    if request.method == 'POST':
-        nome = request.form['nome']
-        email = request.form['email']
-        permissao = request.form['permissao']
-
-        cur = mysql.connection.cursor()
-        cur.execute(
-            "UPDATE usuarios SET nome = %s, email = %s, permissao = %s WHERE id = %s",
-            (nome, email, permissao, usuario_id),
-        )
-        mysql.connection.commit()
-        cur.close()
-
-        flash("Usuário atualizado com sucesso.", "success")
-        return redirect(url_for('listar_user'))
-
-    return render_template('editar_usuario.html', usuario=usuario)
-
-
-# Inicia o servidor Flask no modo de depuração
+# Inicia o servidor Flask em modo de depuração
 if __name__ == "__main__":
     app.run(debug=True)

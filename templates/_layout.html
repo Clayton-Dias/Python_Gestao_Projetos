@@ -50,13 +50,15 @@
                 <!-- Auth Links -->
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
-                    <li class="nav-item">
+                        {% if current_user.permissao == 'administrador' %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-info">Painel Administrativo</a>
+                        {% endif %}
+                        {% if current_user.permissao == 'gerente' %}
+                        <a href="{{ url_for('gerente_dashboard') }}" class="btn btn-primary">Dashboard do Gerente</a>
+                        {% endif %}
                         <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
-                    </li>
                     {% else %}
-                    <li class="nav-item">
-                        <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
-                    </li>
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
                     {% endif %}
                 </ul>
             </div>
@@ -73,9 +75,10 @@
                 <!-- About Section -->
                 <div class="col-md-4">
                     <h5>Sobre</h5>
-                    <p>Gestão de Projetos é uma plataforma dedicada a ajudar equipes a gerenciar e organizar seus projetos de forma eficiente e colaborativa.</p>
+                    <p>Gestão de Projetos é uma plataforma dedicada a ajudar equipes a gerenciar e organizar seus
+                        projetos de forma eficiente e colaborativa.</p>
                 </div>
-    
+
                 <!-- Useful Links -->
                 <div class="col-md-4">
                     <h5>Links Úteis</h5>
@@ -86,7 +89,7 @@
                         <li><a href="{{ url_for('listar_user') }}" class="text-white">Gerenciar Usuários</a></li>
                     </ul>
                 </div>
-    
+
                 <!-- Contact Section -->
                 <div class="col-md-4">
                     <h5>Contato</h5>
@@ -97,9 +100,9 @@
                     </ul>
                 </div>
             </div>
-    
+
             <hr class="border-secondary">
-            
+
             <div class="text-center">
                 &copy; 2024 Gestão de Projetos - Todos os direitos reservados.
             </div>

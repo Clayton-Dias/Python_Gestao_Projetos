@@ -1,0 +1,55 @@
+{% extends '_layout.html' %}
+
+{% block title %}Dashboard - Gerente{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Painel do Gerente</h1>
+
+    <!-- Exibe o número total de projetos -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total de Projetos</h5>
+                    <p class="card-text">{{ total_projetos }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exibe os projetos que o gerente está gerenciando -->
+    <h3 class="my-4">Projetos Gerenciados</h3>
+    {% if projetos_gerente %}
+        <ul class="list-group">
+            {% for projeto in projetos_gerente %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('projeto', projeto_id=projeto['id']) }}">
+                        <h5>{{ projeto['nome'] }}</h5>
+                    </a>
+                    <p>{{ projeto['descricao'] }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">Você não está gerenciando nenhum projeto ainda.</p>
+    {% endif %}
+
+    <!-- Exibe os projetos mais recentes -->
+    <h3 class="my-4">Projetos Recentes</h3>
+    {% if projetos_recentes %}
+        <ul class="list-group">
+            {% for projeto in projetos_recentes %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('projeto', projeto_id=projeto['id']) }}">
+                        <h5>{{ projeto['nome'] }}</h5>
+                    </a>
+                    <p>{{ projeto['descricao'] }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">Nenhum projeto recente encontrado.</p>
+    {% endif %}
+</div>
+{% endblock %}

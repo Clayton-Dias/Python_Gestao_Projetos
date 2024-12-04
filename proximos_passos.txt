@@ -2,9 +2,7 @@ Próximos Passos
 
 Se desejar adicionar mais funcionalidades, algumas sugestões seriam:
 
-- Editar membros: permitir a edição de membros cadastrados (CONCLUIDO)
-
-- Autenticação de Usuários: Permitir login e controle de acesso (diferentes permissões para administradores, gerentes e membros). ()
+- Autenticação de Usuários: Permitir login e controle de acesso (diferentes permissões para administradores, gerentes e membros). (Parcialmente)
 
 - Relatórios: Exibição de relatórios detalhados sobre o progresso do projeto.
 
