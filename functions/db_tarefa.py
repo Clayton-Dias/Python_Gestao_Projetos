@@ -90,3 +90,20 @@ def delete_task(mysql, tarefa_id):
     cur.execute(sql, [tarefa_id])  # Executa o comando com o ID da tarefa
     mysql.connection.commit()  # Confirma a exclusão da tarefa no banco de dados
     cur.close()  # Fecha o cursor
+
+
+def get_tarefas_por_membro(mysql, usuario_id):
+    
+    sql = """
+        SELECT t.id, t.nome, t.descricao, t.status
+        FROM tarefa t
+        INNER JOIN projeto_membro mp ON mp.projeto_id = t.projeto_id
+        WHERE mp.usuario_id = %s
+    """
+    
+    cursor = mysql.connection.cursor()    
+    cursor.execute(sql, (usuario_id,))
+    tarefas = cursor.fetchall()
+    cursor.close()
+    
+    return tarefas

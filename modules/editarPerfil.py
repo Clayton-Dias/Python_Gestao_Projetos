@@ -8,10 +8,10 @@ def mod_editar_perfil(mysql):
     """Página para editar as informações do usuário."""
 
     # Valida se o usuário tem permissão para editar o perfil
-    if current_user.permissao not in ['administrador', 'gerente']:
+    """if current_user.permissao not in ['administrador', 'gerente']:
         flash('Você não tem permissão para editar esse perfil.', 'danger')
         # Redireciona para a página inicial ou outra página
-        return redirect(url_for('index'))
+        return redirect(url_for('index'))"""
 
     if request.method == 'POST':
         # Obtém os dados do formulário
@@ -33,4 +33,4 @@ def mod_editar_perfil(mysql):
         return redirect(url_for('index'))
 
     # Se for um GET, exibe o formulário de edição com os dados atuais
-    return render_template('editar_usuario.html', usuario=current_user)
+    return render_template('editar_perfil.html', usuario=current_user)

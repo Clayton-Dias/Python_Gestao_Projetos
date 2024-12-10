@@ -202,3 +202,20 @@ def count_projetos(mysql):
     cur.close()  # Fecha o cursor
 
     return result['total']  # Retorna o total de projetos
+
+
+def get_projetos_por_membro(mysql, usuario_id):
+    
+    sql = """
+        SELECT p.id, p.nome, p.descricao
+        FROM projeto p
+        INNER JOIN projeto_membro mp ON mp.projeto_id = p.id
+        WHERE mp.membro_id = %s
+    """
+    
+    cursor = mysql.connection.cursor()    
+    cursor.execute(sql, (usuario_id,))
+    projetos = cursor.fetchall()
+    cursor.close()
+    
+    return projetos

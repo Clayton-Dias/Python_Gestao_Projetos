@@ -1,0 +1,55 @@
+{% extends '_layout.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="text-center">Editar Perfil</h2>
+            <form method="POST" action="{{ url_for('editar_perfil') }}">
+                <!-- Mensagem de sucesso ou erro -->
+                {% with messages = get_flashed_messages(with_categories=True) %}
+                {% if messages %}
+                <div>
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" role="alert">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+                
+                <!-- Campo: Nome -->
+                <div class="form-group">
+                    <label for="nome">Nome</label>
+                    <input type="text" class="form-control" id="nome" name="nome" value="{{ current_user.nome }}" required>
+                </div>
+
+                <!-- Campo: Email -->
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" required>
+                </div>
+
+                <!-- Campo: Senha Atual -->
+                <div class="form-group">
+                    <label for="senha_atual">Senha Atual</label>
+                    <input type="password" class="form-control" id="senha_atual" name="senha_atual" required>
+                </div>
+
+                <!-- Campo: Nova Senha -->
+                <div class="form-group">
+                    <label for="nova_senha">Nova Senha</label>
+                    <input type="password" class="form-control" id="nova_senha" name="nova_senha">
+                    <small class="form-text text-muted">
+                        Preencha este campo apenas se desejar alterar sua senha.
+                    </small>
+                </div>
+
+                <!-- Botão: Salvar Alterações -->
+                <button type="submit" class="btn btn-primary btn-block">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

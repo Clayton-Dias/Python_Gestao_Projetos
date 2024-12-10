@@ -31,19 +31,31 @@
             <!-- Navbar Links -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
-                    <!-- Link: Gerenciar Membros -->
+                    
+                    <!-- Botão: Gerenciar Membros -->
+                    {% if current_user.permissao == 'gerente' or current_user.permissao == 'administrador' %}
                     <li class="nav-item">
-                        <a href="{{ url_for('listar_membros') }}" class="nav-link">Gerenciar Membros</a>
+                        <a class="nav-link" href="{{ url_for('listar_membros') }}">Gerenciar Membros</a>
                     </li>
+                    {% endif %}
 
-                    <!-- Link: Criar Novo Projeto -->
+                    <!-- Botão: Criar Novo Projeto -->
+                    {% if current_user.permissao == 'gerente' or current_user.permissao == 'administrador' %}
                     <li class="nav-item">
-                        <a href="{{ url_for('criar_projeto') }}" class="nav-link">Criar Novo Projeto</a>
+                        <a class="nav-link" href="{{ url_for('criar_projeto') }}">Criar Novo Projeto</a>
                     </li>
+                    {% endif %}
 
-                    <!-- Link: Gerenciar Usuários -->
+                    <!-- Botão: Gerenciar Usuários -->
+                    {% if current_user.permissao == 'gerente' or current_user.permissao == 'administrador' %}
                     <li class="nav-item">
                         <a href="{{ url_for('listar_user') }}" class="nav-link">Gerenciar Usuários</a>
+                    </li>
+                    {% endif %}
+
+                    <!-- Link para Editar Perfil -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('editar_perfil') }}">Editar Perfil</a>
                     </li>
                 </ul>
 
@@ -51,10 +63,16 @@
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
                         {% if current_user.permissao == 'administrador' %}
+                        <!-- Link para o Dashboard do Administrador -->
                         <a href="{{ url_for('admin_dashboard') }}" class="btn btn-info">Painel Administrativo</a>
                         {% endif %}
                         {% if current_user.permissao == 'gerente' %}
+                         <!-- Link para o Dashboard do Gerente -->
                         <a href="{{ url_for('gerente_dashboard') }}" class="btn btn-primary">Dashboard do Gerente</a>
+                        {% endif %}
+                        {% if current_user.permissao == 'membro' %}
+                        <!-- Link para o Dashboard do Membro -->
+                        <a  href="{{ url_for('membro_dashboard') }}" class="nav-link">Membro Dashboard</a>
                         {% endif %}
                         <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
                     {% else %}

@@ -10,7 +10,7 @@ senha_membro = generate_password_hash('123456', method='pbkdf2:sha256', salt_len
 conexao = mysql.connector.connect(
     host='localhost',
     user='root',
-    password='',
+    password='123456',
     database='projeto_gestao'
 )
 cursor = conexao.cursor()

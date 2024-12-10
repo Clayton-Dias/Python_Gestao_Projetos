@@ -8,6 +8,7 @@ from modules.editarPerfil import mod_editar_perfil
 from modules.listarUser import mod_listar_user
 from modules.loadUser import mod_load_user
 from modules.login import mod_login
+from modules.membroDashboard import mod_membro_dashborad
 from utils.access_control import permission_required
 
 
@@ -120,6 +121,7 @@ def adicionar_membro(projeto_id):
 
 # Rota para listar todos os membros
 @app.route('/membros')
+@permission_required(['gerente', 'administrador'])
 @login_required
 def listar_membros():
     return mod_listar_membros(mysql)  # Chama o módulo de listagem de membros
@@ -171,8 +173,18 @@ def admin_dashboard():
 def gerente_dashboard():
     return render_template('gerente_dashboard.html')  # Renderiza o painel do gerente
 
+@app.route('/membro_dashboard')
+@permission_required(['membro'])  # Apenas para usuários com permissão de 'membro'
+@login_required
+def membro_dashboard():
+    return mod_membro_dashborad(mysql)
+
+
+
 # Rota para criar um novo usuário
 @app.route('/criar_usuario', methods=['GET', 'POST'])
+@permission_required(['administrador', 'gerente'])  # Apenas administradores e gerentes
+@login_required
 def criar_usuario():
     return mod_criar_usuario(mysql)  # Chama a lógica de criação de usuário
 
@@ -184,6 +196,7 @@ def editar_perfil():
 
 # Rota para listar todos os usuários
 @app.route('/listar_user')
+@permission_required(['administrador', 'gerente'])  # Apenas administradores podem listar usuários
 @login_required
 def listar_user():
     return mod_listar_user(mysql)  # Chama a listagem de usuários
@@ -193,6 +206,8 @@ def listar_user():
 @login_required
 def editar_usuario(usuario_id):
     return mod_editar_usuario(mysql, usuario_id)  # Chama a função de edição de usuário
+
+
 
 # Inicia o servidor Flask em modo de depuração
 if __name__ == "__main__":

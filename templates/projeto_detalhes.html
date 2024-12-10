@@ -115,7 +115,9 @@
             <form method="POST"
                 action="{{ url_for('remover_membro', projeto_id=page['projeto']['id'], membro_id=membro.id) }}"
                 class="mb-0">
+                {% if current_user.permissao != 'membro' %}
                 <button type="submit" class="btn btn-danger ml-3">Remover</button>
+                {% endif %}
             </form>
         </li>
         {% else %}
@@ -125,6 +127,7 @@
 
 
     <!-- Adicionar Membro ao Projeto -->
+    {% if current_user.permissao != 'membro' %}
     <h3 class="mt-4">Adicionar Membro ao Projeto</h3>
     <form method="POST" action="{{ url_for('adicionar_membro', projeto_id=page['projeto']['id']) }}">
         <div class="form-group">
@@ -137,7 +140,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Adicionar Membro</button>
     </form>
-
+    {% endif %}
     <div>
         <!-- Botão Voltar para a Página Inicial -->
         <a href="{{ url_for('index') }}" class="btn btn-primary mt-3 mr-3">Voltar para a Página Inicial</a>

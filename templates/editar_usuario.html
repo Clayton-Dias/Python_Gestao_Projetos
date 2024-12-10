@@ -20,7 +20,7 @@
             <option value="administrador" {% if usuario.permissao == 'administrador' %}selected{% endif %}>
                 Administrador
             </option>
-            <option value="gerente" {% if usuario.permissao == 'gerente' %}selected{% endif %}>Gerente</option>
+            <option value="gerente" {% if current_user.permissao == 'gerente' or current_user.permissao == 'administrador' %} selected{% endif %}>Gerente</option>
             <option value="membro" {% if usuario.permissao == 'membro' %}selected{% endif %}>Membro</option>
         </select>
     </div>
